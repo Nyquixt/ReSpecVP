@@ -1,0 +1,10 @@
+{% macro render_field(field, is_required) %}
+    {{ field.label }} {% if is_required %}<span style="color: red;">*</span>{% endif %}
+    {{ field(**kwargs)|safe }}
+    {% if field.errors %}
+
+    {% for error in field.errors %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endfor %}
+    {% endif %}
+{% endmacro %}
