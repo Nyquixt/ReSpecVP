@@ -1,17 +1,16 @@
-{% extends base.html %}
+{% extends 'base.html' %}
 {% block title %} Register {% endblock %}
 {% block content %}
 <div>
     {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="{{ url_for('.register') }}" role="form">
+    <form method="POST" action="" role="form">
+        {{ form.hidden_tag() }}
         <div class="form-group">
-            {{ render_field(form.first_name, class='form-control', is_required=True) }}
-            {{ render_field(form.last_name, class='form-control', is_required=True) }}
-            {{ render_field(form.username, class='form-control',is_required=True) }}
-            {{ render_field(form.email, class='form-control',is_required=True) }}
+            {{ render_field(form.username, class='form-control', is_required=True) }}
             {{ render_field(form.password, class='form-control', is_required=True)}}
+            {{ render_field(form.confirmed, class='form-control', is_required=True)}}
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Register</button>
     </form>
 </div>
 {% endblock %}
