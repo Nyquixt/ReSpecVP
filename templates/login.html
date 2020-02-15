@@ -1,7 +1,13 @@
 {% extends base.html %}
-{% block title %} Register {% endblock %}
+{% block title %} Login {% endblock %}
 {% block content %}
 <div>
-    
+    {% from "_formhelpers.html" import render_field %}
+    <form method="POST" action="{{ url_for('.login') }}" role="form">
+        <div class="form-group">
+            {{ render_field(form.email, class='form-control',is_required=True) }}
+            {{ render_field(form.password, class='form-control', is_required=True)}}
+        </div>
+    </form>
 </div>
 {% endblock %}
