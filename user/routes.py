@@ -13,14 +13,6 @@ def view_users():
     return 'good'
 
 
-
-@user_app.route('/')
-def home():
-    return render_template("landingpage.html")
-
-
-
-
 # register
 @user_app.route('/register', methods=['GET', 'POST'])
 def register():
