@@ -55,6 +55,7 @@ class Request(db.Document):
     desc = db.StringField(db_field='desc')
     host = db.ReferenceField(User, db_field='host_person')
     accepted = db.BooleanField(db_field='accepted', default=False)
+    accepted_by = db.ReferenceField(User, db_field='accepted_by')
 
 
 """ Forms """
@@ -146,7 +147,8 @@ def login():
 def dashboard():
     events = Event.objects()
     requests = Request.objects()
-    return render_template('dashboard.html', events=reversed(events), requests=reversed(requests))
+    user_id = User.objects.get(username=session['username']).id
+    return render_template('dashboard.html', events=reversed(events), requests=reversed(requests), user_id=user_id)
 
 # log out
 @login_required
@@ -203,6 +205,86 @@ def upload_request():
             }
         return {
             "status": "fail"
+        }
+    else:
+        return abort(403)
+
+@login_required
+@app.route('/event/rsvp', methods=['POST'])
+def rsvp():
+    if 'username' in session:
+        if request.method == 'POST':
+            data = json.loads(request.data)
+
+            event = Event.objects.get(id=data['event-id'])
+            user = User.objects.get(username=session['username'])
+
+            rsvp_list = event.rsvp
+
+            if len(rsvp_list) < event.max_participants: # add if not exceed max ppl
+                rsvp_list.append(user.id)
+            else:
+                return {
+                    "status": "Max RSVP Reached !"
+                }
+
+            event.rsvp = rsvp_list
+            event.save()
+
+            return {
+                "status": "success"
+            }
+        return {
+            "status": "failed..."
+        }
+    else:
+        return abort(403)
+
+@login_required
+@app.route('/event/cancelrsvp', methods=['POST'])
+def cancel_rsvp():
+    if 'username' in session:
+        if request.method == 'POST':
+            data = json.loads(request.data)
+
+            event = Event.objects.get(id=data['event-id'])
+            user = User.objects.get(username=session['username'])
+
+            rsvp_list = event.rsvp
+            rsvp_list.remove(user.id)
+
+            event.rsvp = rsvp_list
+            event.save()
+
+            return {
+                "status": "success"
+            }
+        return {
+            "status": "failed..."
+        }
+    else:
+        return abort(403)
+
+@login_required
+@app.route('/request/accept', methods=['POST'])
+def accept():
+    if 'username' in session:
+        if request.method == 'POST':
+            data = json.loads(request.data)
+
+            req = Request.objects.get(id=data['request-id'])
+            user = User.objects.get(username=session['username'])
+
+            req.accepted = True
+            req.accepted_by = user
+
+            req.save()
+
+            return {
+                "status": "success"
+            }
+        return {
+            "status": "failed..."
         }
     else:
         return abort(403)

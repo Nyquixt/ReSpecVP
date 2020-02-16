@@ -108,9 +108,15 @@
                     <p class="text-center">Max Ppl: {{ event.max_participants }}</p>
                     <hr />
                     <p class="card-text">{{ event.desc }}</p>
+                    {% if user_id in event.rsvp %}
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary">RSVP</button>
+                        <button class="btn btn-danger cancel-rsvp" data-eventid="{{ event.id }}">Cancel RSVP</button>
                     </div>
+                    {% else %}
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary rsvp" data-eventid="{{ event.id }}">RSVP</button>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -129,7 +135,7 @@
                     </div>
                     {% else %}
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-success">Accept</button>
+                        <button class="btn btn-success" data-reqid="{{ req.id }}">Accept</button>
                     </div>
                     {% endif %}
                 </div>
@@ -179,6 +185,51 @@
             location.reload(true);
         });
 
+        // rsvp event
+        $(document).on('click', '.rsvp', function(event) {
+            $.ajax({
+                url: "{{ url_for('rsvp') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-id': $(this).data('eventid')
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            event.preventDefault();
+
+            location.reload(true);
+        });
+
+        // cancel rsvp event
+        $(document).on('click', '.cancel-rsvp', function(event) {
+            $.ajax({
+                url: "{{ url_for('cancel_rsvp') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-id': $(this).data('eventid')
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            event.preventDefault();
+
+            location.reload(true);
+        });
+
+        // upload request
         $(document).on('click', '#request-btn', function (event) {
             $.ajax({
                 url: "{{ url_for('upload_request') }}",
