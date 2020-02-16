@@ -23,10 +23,12 @@
     }
 </style>
 {% endblock %}
+
 {% block content %}
 {% if 'username' in session %}
 <div>
     <div class="pb-5">
+
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="home-tab" data-toggle="tab" href="#createevent" role="tab"
@@ -37,9 +39,11 @@
                     aria-controls="profile" aria-selected="false">Request</a>
             </li>
         </ul>
+
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="createevent" role="tabpanel" aria-labelledby="create-event-tab">
                 <div class="row">
+
                     <div class="col-lg-6 mt-2 pr-5 pl-5">
                         <form method="POST" action="/event/upload" role="form" id="event-form">
                             <div class="form-group">
@@ -70,6 +74,7 @@
                             <button class="btn btn-primary" id="event-btn">Post</button>
                         </form>
                     </div>
+
                     <div class="col-lg-6 mt-2 pr-5 pl-5 overflow-auto" style="height: 80vh">
                         {% for event in events %}
                         <div class="row eventCard cardContainer mt-2">
@@ -82,40 +87,26 @@
                                 <p class="text-center">Max Ppl: {{ event.max_participants }}</p>
                                 <hr />
                                 <p class="card-text">{{ event.desc }}</p>
+
+                                {% if user_id in event.rsvp %}
                                 <div class="d-flex justify-content-center">
-                                    <button class="btn btn-primary">RSVP</button>
+                                    <button class="btn btn-danger cancel-rsvp" data-eventid="{{ event.id }}">Cancel
+                                        RSVP</button>
                                 </div>
+                                {% else %}
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-primary rsvp" data-eventid="{{ event.id }}">RSVP</button>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
-                        <button class="btn btn-success" id="request-btn">Request</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 mt-2 pr-5 pl-5 overflow-auto" style="height: 80vh">
-            {% for event in events %}
-            <div class="row eventCard cardContainer mt-2">
-                <div class="card-body">
-                    <h5 class="card-title text-center">{{ event.name }}</h5>
-                    <p class="text-center"><span>{{ event.location }}</span> |
-                        <span>{{ event.time.strftime('%B %d, %Y') }}</span> | <span>
-                            {{ event.time.strftime('%I:%M %p') }}
-                        </span></p>
-                    <p class="text-center">Max Ppl: {{ event.max_participants }}</p>
-                    <hr />
-                    <p class="card-text">{{ event.desc }}</p>
-                    {% if user_id in event.rsvp %}
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-danger cancel-rsvp" data-eventid="{{ event.id }}">Cancel RSVP</button>
                         {% endfor %}
+                        </form>
                     </div>
-                    {% else %}
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary rsvp" data-eventid="{{ event.id }}">RSVP</button>
-                    </div>
-                    {% endif %}
+
                 </div>
             </div>
+
             <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="request-tab">
                 <div class="row">
                     <div class="col-lg-6 mt-2 pr-5 pl-5">
@@ -138,31 +129,36 @@
                             <button class="btn btn-success" id="request-btn">Request</button>
                         </form>
                     </div>
-                    {% else %}
+
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-success" data-reqid="{{ req.id }}">Accept</button>
-                    <div class="col-lg-6 mt-2 pr-5 pl-5 overflow-auto" style="height: 80vh">
-                        {% for req in requests %}
-                        <div class="row requestCard cardContainer mt-2">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">{{ req.name }}</h5>
-                                <p class="text-center"><span>{{ req.time.strftime('%B %d, %Y') }}</span> |
-                                    <span>{{ req.time.strftime('%I:%M %p') }}</span></p>
-                                <hr />
-                                <p class="card-text">{{ req.desc }}</p>
-                                {% if req.accepted %}
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-secondary">Accepted By Someone</button>
+                        <div class="col-lg-6 mt-2 pr-5 pl-5 overflow-auto" style="height: 80vh">
+                            {% for req in requests %}
+                            <div class="row requestCard cardContainer mt-2">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">{{ req.name }}</h5>
+                                    <p class="text-center"><span>{{ req.time.strftime('%B %d, %Y') }}</span> |
+                                        <span>{{ req.time.strftime('%I:%M %p') }}</span></p>
+                                    <hr />
+                                    <p class="card-text">{{ req.desc }}</p>
+
+                                    {% if req.accepted %}
+                                    <div class="d-flex justify-content-center">
+                                        <button class="btn btn-secondary" data-reqid="{{ req.id }}">Accepted By
+                                            Someone</button>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex justify-content-center">
+                                        <button class="btn btn-success" data-reqid="{{ req.id }}">Accept</button>
+                                    </div>
+                                    {% endif %}
+
                                 </div>
-                                {% else %}
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-success">Accept</button>
-                                </div>
-                                {% endif %}
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -210,7 +206,7 @@
         });
 
         // rsvp event
-        $(document).on('click', '.rsvp', function(event) {
+        $(document).on('click', '.rsvp', function (event) {
             $.ajax({
                 url: "{{ url_for('rsvp') }}",
                 type: 'post',
@@ -232,7 +228,7 @@
         });
 
         // cancel rsvp event
-        $(document).on('click', '.cancel-rsvp', function(event) {
+        $(document).on('click', '.cancel-rsvp', function (event) {
             $.ajax({
                 url: "{{ url_for('cancel_rsvp') }}",
                 type: 'post',
@@ -262,7 +258,8 @@
                 dataType: 'json',
                 data: JSON.stringify({
                     'request-name': $('#requestName').val(),
-                    'request-time': document.getElementById('requestTime').value,
+                    'request-time': document.getElementById('requestTime')
+                        .value,
                     'request-desc': $('#requestDesc').val()
                 }),
                 success: function (res) {
