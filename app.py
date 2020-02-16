@@ -142,7 +142,9 @@ def login():
 @login_required
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('dashboard.html')
+    events = Event.objects()
+    requests = Request.objects()
+    return render_template('dashboard.html', events=events, requests=requests)
 
 # log out
 @login_required
@@ -177,13 +179,6 @@ def upload_event():
         }
     else:
         return abort(403)
-
-# all events
-@login_required
-@app.route('/events', methods=['GET'])
-def all_events():
-    events = Event.objects().to_json()
-    return events
 
 # upload request
 @login_required
