@@ -29,19 +29,19 @@
     <div class="pb-5 mt-5">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#createevent" role="tab"
-                    aria-controls="home" aria-selected="true">Event</a>
+                <a class="nav-link active" id="event-tab" data-toggle="tab" href="#event" role="tab"
+                    aria-controls="event" aria-selected="true">Event</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#request" role="tab"
-                    aria-controls="profile" aria-selected="false">Request</a>
+                <a class="nav-link" id="request-tab" data-toggle="tab" href="#request" role="tab"
+                    aria-controls="request" aria-selected="false">Request</a>
             </li>
         </ul>
 
+        <!-- tab-pane -->
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="createevent" role="tabpanel" aria-labelledby="create-event-tab">
+            <div class="tab-pane fade show active" id="event" role="tabpanel" aria-labelledby="event-tab">
                 <div class="row">
-
                     <div class="col-lg-6 mt-2 pr-5 pl-5">
                         <form method="POST" action="/event/upload" role="form" id="event-form">
                             <div class="form-group">
@@ -72,7 +72,6 @@
                             <button class="btn btn-primary" id="event-btn">Post</button>
                         </form>
                     </div>
-
                     <div class="col-lg-6 mt-2 pr-5 pl-5 overflow-auto" style="height: 80vh">
                         {% for event in events %}
                         <div class="row eventCard cardContainer mt-2">
@@ -104,12 +103,10 @@
                             </div>
                         </div>
                         {% endfor %}
-                        </form>
                     </div>
-
                 </div>
             </div>
-
+            <!-- tab-pane -->
             <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="request-tab">
                 <div class="row">
                     <div class="col-lg-6 mt-2 pr-5 pl-5">
@@ -142,7 +139,6 @@
                                     <span>{{ req.time.strftime('%I:%M %p') }}</span></p>
                                 <hr />
                                 <p class="card-text">{{ req.desc }}</p>
-
                                 {% if req.accepted %}
                                 {% if user_id == req.accepted_by.id %}
                                 <div class="d-flex justify-content-center">
@@ -154,7 +150,7 @@
                                         Someone</button>
                                 </div>
                                 {% endif %}
-                                
+
                                 {% else %}
                                 <div class="d-flex justify-content-center">
                                     <button class="btn btn-success accept" data-reqid="{{ req.id }}">Accept</button>
@@ -176,138 +172,138 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-    // upload event
+        // upload event
 
-    $(document).on('click', '#event-btn', function (event) {
-        $.ajax({
-            url: "{{ url_for('upload_event') }}",
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-                'event-name': $('#eventName').val(),
-                'event-time': document.getElementById('eventTime').value,
-                'event-location': $('#eventLocation').val(),
-                'event-ppl': $('#maxPpl').val(),
-                'event-desc': $('#eventDesc').val()
-            }),
-            success: function (res) {
-                console.log("success upload");
-            },
-            error: function (xhr) {
-                console.log("failed...");
-            }
+        $(document).on('click', '#event-btn', function (event) {
+            $.ajax({
+                url: "{{ url_for('upload_event') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-name': $('#eventName').val(),
+                    'event-time': document.getElementById('eventTime').value,
+                    'event-location': $('#eventLocation').val(),
+                    'event-ppl': $('#maxPpl').val(),
+                    'event-desc': $('#eventDesc').val()
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            // clear fields
+            $('#eventName').val("");
+            $('#eventTime').val("");
+            $('#eventLocation').val("");
+            $('#maxPpl').val("");
+            $('#eventDesc').val("");
+
+            // prevent reloading
+            event.preventDefault();
+
+            location.reload(true);
         });
-        // clear fields
-        $('#eventName').val("");
-        $('#eventTime').val("");
-        $('#eventLocation').val("");
-        $('#maxPpl').val("");
-        $('#eventDesc').val("");
 
-        // prevent reloading
-        event.preventDefault();
+        // rsvp event
+        $(document).on('click', '.rsvp', function (event) {
+            $.ajax({
+                url: "{{ url_for('rsvp') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-id': $(this).data('eventid')
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            event.preventDefault();
 
-        location.reload(true);
-    });
-
-    // rsvp event
-    $(document).on('click', '.rsvp', function (event) {
-        $.ajax({
-            url: "{{ url_for('rsvp') }}",
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-                'event-id': $(this).data('eventid')
-            }),
-            success: function (res) {
-                console.log("success upload");
-            },
-            error: function (xhr) {
-                console.log("failed...");
-            }
+            location.reload(true);
         });
-        event.preventDefault();
 
-        location.reload(true);
-    });
+        // cancel rsvp event
+        $(document).on('click', '.cancel-rsvp', function (event) {
+            $.ajax({
+                url: "{{ url_for('cancel_rsvp') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-id': $(this).data('eventid')
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            event.preventDefault();
 
-    // cancel rsvp event
-    $(document).on('click', '.cancel-rsvp', function (event) {
-        $.ajax({
-            url: "{{ url_for('cancel_rsvp') }}",
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-                'event-id': $(this).data('eventid')
-            }),
-            success: function (res) {
-                console.log("success upload");
-            },
-            error: function (xhr) {
-                console.log("failed...");
-            }
+            location.reload(true);
         });
-        event.preventDefault();
 
-        location.reload(true);
-    });
+        // upload request
+        $(document).on('click', '#request-btn', function (event) {
+            $.ajax({
+                url: "{{ url_for('upload_request') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'request-name': $('#requestName').val(),
+                    'request-time': document.getElementById('requestTime')
+                        .value,
+                    'request-desc': $('#requestDesc').val()
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            // clear fields
+            $('#requestName').val("");
+            $('#requestTime').val("");
+            $('#requestDesc').val("");
 
-    // upload request
-    $(document).on('click', '#request-btn', function (event) {
-        $.ajax({
-            url: "{{ url_for('upload_request') }}",
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-                'request-name': $('#requestName').val(),
-                'request-time': document.getElementById('requestTime')
-                    .value,
-                'request-desc': $('#requestDesc').val()
-            }),
-            success: function (res) {
-                console.log("success upload");
-            },
-            error: function (xhr) {
-                console.log("failed...");
-            }
+            // prevent reloading
+            event.preventDefault();
+
+            location.reload(true);
         });
-        // clear fields
-        $('#requestName').val("");
-        $('#requestTime').val("");
-        $('#requestDesc').val("");
 
-        // prevent reloading
-        event.preventDefault();
+        // accept request
+        // cancel rsvp event
+        $(document).on('click', '.accept', function (event) {
+            $.ajax({
+                url: "{{ url_for('accept') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'req-id': $(this).data('reqid')
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            event.preventDefault();
 
-        location.reload(true);
-    });
-
-    // accept request
-    // cancel rsvp event
-    $(document).on('click', '.accept', function (event) {
-        $.ajax({
-            url: "{{ url_for('accept') }}",
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-                'req-id': $(this).data('reqid')
-            }),
-            success: function (res) {
-                console.log("success upload");
-            },
-            error: function (xhr) {
-                console.log("failed...");
-            }
+            location.reload(true);
         });
-        event.preventDefault();
-
-        location.reload(true);
     });
-});
 </script>
 {% endblock %}
