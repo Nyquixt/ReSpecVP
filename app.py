@@ -4,7 +4,7 @@ from flask import Blueprint, session, request, redirect, url_for, abort, render_
 
 # form funcs
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, validators
+from wtforms import StringField, TextAreaField, PasswordField, DateTimeField, IntegerField, validators
 
 # utility imports
 from functools import wraps
@@ -43,8 +43,6 @@ class Event(db.Document):
     name = db.StringField(db_field='name')
     time = db.DateTimeField(db_field='time')
     location = db.StringField(db_field='location')
-    lng = db.StringField(db_field='longitude')
-    lat = db.StringField(db_field='latitude')
     max_participants = db.IntField(db_field='max_ppl')
     host = db.ReferenceField(User, db_field='host_person')
     desc = db.StringField(db_field='desc')
@@ -56,7 +54,7 @@ class Request(db.Document):
 
 
 """ Forms """
-
+# user
 class LoginForm(FlaskForm):
     username = StringField('Username', [
         validators.DataRequired(),
@@ -90,6 +88,25 @@ class RegisterForm(FlaskForm):
     def validate_email(form, field):
         if User.objects.filter(email=field.data).first():
             raise validators.ValidationError('Email already exists')
+
+# event
+class EventForm(FlaskForm):
+    name = StringField('Name', [
+        validators.DataRequired(),
+        validators.length(min=4, max=50)
+    ])
+
+    time = DateTimeField('Time', [
+        validators.DataRequired()
+    ])
+
+    location = StringField('Location', [
+        validators.DataRequired()
+    ])
+
+    max_ppl = IntegerField('Max Participants')
+
+    desc = TextAreaField('Description')
 
 """ Routes """
 # register
@@ -144,6 +161,86 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+# events
+@login_required
+@app.route('/event/upload', methods=['GET', 'POST'])
+def upload_event():
+    if 'username' in session:
+
+        form = EventForm()
+
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                new_event = Event()
+                new_event.name = form.name.data
+                new_event.time = form.time.data
+                new_event.location = form.location.data
+                
+                if form.max_ppl.data:
+                    new_event.max_participants = form.max_ppl.data
+
+                if form.desc.data:
+                    new_event.desc = form.desc.data
+
+                host = User.objects.get(username=session['username'])
+
+                if host is None:
+                    return abort(403)
+
+                new_event.host = host
+                new_event.save()
+
+                return redirect(url_for('index'))
+        return render_template('event/upload_event.html', form=form)
+    else:
+        return abort(403)
+
+# edit events
+@login_required
+@app.route('/event/edit/<id>', methods=['GET', 'POST'])
+def edit_event(id):
+    if 'username' in session:
+        try:
+            event = Event.objects.get(id=id)
+        except:
+            return abort(404)
+
+        user = User.objects.get(username=session['username'])
+
+        if user.id == event.host.id: # valid user to edit
+            form = EventForm(
+                name=event.name,
+                time=event.time,
+                location=event.location,
+            )
+
+            if event.max_participants:
+                form.max_ppl.data = event.max_participants
+            
+            if event.desc:
+                form.desc.data = event.desc
+
+            if request.method == 'POST':
+                if form.validate_on_submit():
+
+                    event.name = form.name.data
+                    event.time = form.time.data
+                    event.location = form.location.data
+                    
+                    event.max_participants = form.max_ppl.data
+
+                    event.desc = form.desc.data
+                    print(form.desc.data)
+                    event.save()
+
+                    return redirect(url_for('index'))
+        else:
+            return abort(403)
+
+        return render_template('event/edit_event.html', form=form)
+    else:
+        return abort(403)
 
 # general routes
 
