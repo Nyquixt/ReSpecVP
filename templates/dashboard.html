@@ -1,9 +1,37 @@
 {% extends 'base.html' %}
 {% block title %} Dashboard {% endblock %}
+{% block head %}
+<style>
+    .formTab {
+        position: fixed;
+    }
+
+    .cardContainer {
+        min-height: 300px;
+        border-radius: 2px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    }
+
+    .cardContainer:hover {
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    }
+
+    .eventCard {
+        background-color: #87A330;
+        color: white;
+    }
+
+    .requestCard {
+        background-color: #1A8FE3;
+        color: white;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-4 mt-2 sticky">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="home-tab" data-toggle="tab" href="#createevent" role="tab"
@@ -20,15 +48,18 @@
                     <form method="POST" action="" role="form">
                         <div class="form-group">
                             <label for="eventName">Event Name</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventName" aria-describedby="eventName" required>
+                            <input type="text" class="form-control" id="eventName" aria-describedby="eventName"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="eventTime">Time</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventTime" aria-describedby="eventTime" required>
+                            <input type="text" class="form-control" id="eventTime" aria-describedby="eventTime"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="eventLocation">Location</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventLocation" aria-describedby="eventLocation" required>
+                            <input type="text" class="form-control" id="eventLocation" aria-describedby="eventLocation"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="maxPpl">Max Number of People</label>
@@ -36,7 +67,8 @@
                         </div>
                         <div class="form-group">
                             <label for="eventName">Description</label>
-                            <textarea type="text" class="form-control" id="eventDesc" aria-describedby="eventDesc"></textarea>
+                            <textarea type="text" class="form-control" id="eventDesc"
+                                aria-describedby="eventDesc"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Post</button>
                     </form>
@@ -45,36 +77,72 @@
                     <form method="POST" action="" role="form">
                         <div class="form-group">
                             <label for="requestTitle">Request Name</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="requestTitle" aria-describedby="requestTitle" required>
+                            <input type="text" class="form-control" id="requestTitle" aria-describedby="requestTitle"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="requestTime">Time</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="requestTime" aria-describedby="requestTime" required>
+                            <input type="text" class="form-control" id="requestTime" aria-describedby="requestTime"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="requestDesc">Description</label>
-                            <textarea type="text" class="form-control" id="requestDesc" aria-describedby="requestDesc"></textarea>
+                            <textarea type="text" class="form-control" id="requestDesc"
+                                aria-describedby="requestDesc"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Request</button>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            {% for event in events %}
+        <div class="col-lg-8 mt-2">
             <div class="row">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ event.name }}</h5>
-                        <p class="card-text">{{ event.date }}</p>
-                        <p class="card-text"></p>
-                        <a href="" class="btn btn-primary">RSVP</a>
+                <div class="col-md-4 mt-2">
+                    <div class="eventCard cardContainer">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Cat Meetup</h5>
+                            <p class="text-center"><span>TCU Common</span> | <span>Feb 20, 2020</span> | <span>2:00
+                                    PM</span></p>
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-primary">RSVP</button>
+                            </div>
+                            <hr />
+                            <p class="card-text">Bring your cats with you and meet other cat lovers. Cat foods and toys
+                                are
+                                provided.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mt-2">
+                    <div class="requestCard cardContainer">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">I need a ride to work tomorrow.</h5>
+                            <p class="text-center"><span>Feb 21, 2020</span> | <span>7:00
+                                    AM</span></p>
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-success">Accept</button>
+                            </div>
+                            <hr />
+                            <p class="card-text">Please meet me at TCU Library.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mt-2">
+                    <div class="requestCard cardContainer">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">I need a ride to work tomorrow.</h5>
+                            <p class="text-center"><span>Feb 21, 2020</span> | <span>7:00
+                                    AM</span></p>
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-success">Accept</button>
+                            </div>
+                            <hr />
+                            <p class="card-text">Please meet me at TCU Library.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-
     </div>
 </div>
 {% endblock %}
