@@ -15,13 +15,11 @@ app = Flask(__name__)
 
 # cfg
 app.config['SECRET_KEY'] = 'ReSpecVP'
-# app.config['MONGODB_SETTINGS'] =  {
-#     'db': 'respecvp',
-#     'host': '127.0.0.1',
-#     'port': 27017
-# }
-
-app.config['MONGODB_URI'] = 'mongodb://nyquixt:gray1711@ds143778.mlab.com:43778/respecvp'
+app.config['MONGODB_SETTINGS'] =  {
+    'db': 'respecvp',
+    'host': '127.0.0.1',
+    'port': 27017
+}
 
 db = MongoEngine(app)
 
@@ -228,6 +226,7 @@ def rsvp():
             rsvp_list = event.rsvp
 
             if len(rsvp_list) < event.max_participants: # add if not exceed max ppl
+                print('adding')
                 rsvp_list.append(user.id)
             else:
                 return {
