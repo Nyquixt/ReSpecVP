@@ -15,11 +15,13 @@ app = Flask(__name__)
 
 # cfg
 app.config['SECRET_KEY'] = 'ReSpecVP'
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'respecvp',
-    'host': '127.0.0.1',
-    'port': 27017
-}
+# app.config['MONGODB_SETTINGS'] =  {
+#     'db': 'respecvp',
+#     'host': '127.0.0.1',
+#     'port': 27017
+# }
+
+app.config['MONGODB_URI'] = 'mongodb://nyquixt:gray1711@ds143778.mlab.com:43778/respecvp'
 
 db = MongoEngine(app)
 
@@ -134,10 +136,11 @@ def login():
                     session['username'] = form.username.data  # set the session variables
                     return redirect(url_for('dashboard'))
                 else:
-                    return render_template('user/login.html', error='Incorrect username or password')
+
+                    return render_template('user/login.html', form=form, error='Incorrect username or password')
             # user does not exist
             else:
-                return render_template('user/login.html', error='Not a valid username. Register?')
+                return render_template('user/login.html', form=form, error='Not a valid username. Register?')
 
     return render_template('user/login.html', form=form)
 
