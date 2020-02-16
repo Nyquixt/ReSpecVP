@@ -29,6 +29,7 @@
 </style>
 {% endblock %}
 {% block content %}
+{% if 'username' in session %}
 <div>
     <div class="row">
         <div class="col-lg-4 mt-2 sticky">
@@ -45,43 +46,44 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="createevent" role="tabpanel"
                     aria-labelledby="create-event-tab">
-                    <form method="POST" action="" role="form">
+                    <form method="POST" action="/event/upload" role="form" id="event-form">
                         <div class="form-group">
-                            <label for="eventName">Event Name</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventName" aria-describedby="eventName"
-                                required>
+                            <label for="eventName">Name</label> <span style="color: red;">*</span>
+                            <input type="text" name="event-name" class="form-control" id="eventName"
+                                aria-describedby="eventName" required>
                         </div>
                         <div class="form-group">
-                            <label for="eventTime">Time</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventTime" aria-describedby="eventTime"
-                                required>
+                            <label for="eventTime">Time</label> <span style="color: red;">*</span>
+                            <input type="text" name="event-time" class="form-control" id="eventTime"
+                                aria-describedby="eventTime" required>
                         </div>
                         <div class="form-group">
-                            <label for="eventLocation">Location</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="eventLocation" aria-describedby="eventLocation"
-                                required>
+                            <label for="eventLocation">Location</label> <span style="color: red;">*</span>
+                            <input type="text" name="event-location" class="form-control" id="eventLocation"
+                                aria-describedby="eventLocation" required>
                         </div>
                         <div class="form-group">
                             <label for="maxPpl">Max Number of People</label>
-                            <input type="text" class="form-control" id="maxPpl" aria-describedby="maxPpl">
+                            <input type="number" name="event-ppl" class="form-control" id="maxPpl"
+                                aria-describedby="maxPpl">
                         </div>
                         <div class="form-group">
                             <label for="eventName">Description</label>
-                            <textarea type="text" class="form-control" id="eventDesc"
+                            <textarea type="text" name="event-desc" class="form-control" id="eventDesc"
                                 aria-describedby="eventDesc"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Post</button>
+                        <button class="btn btn-primary" id="event-btn">Post</button>
                     </form>
                 </div>
                 <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="profile-tab">
                     <form method="POST" action="" role="form">
                         <div class="form-group">
-                            <label for="requestTitle">Request Name</label><span style="color: red;">*</span>
-                            <input type="text" class="form-control" id="requestTitle" aria-describedby="requestTitle"
+                            <label for="requestName">Request Name</label> <span style="color: red;">*</span>
+                            <input type="text" class="form-control" id="requestName" aria-describedby="requestTitle"
                                 required>
                         </div>
                         <div class="form-group">
-                            <label for="requestTime">Time</label><span style="color: red;">*</span>
+                            <label for="requestTime">Time</label> <span style="color: red;">*</span>
                             <input type="text" class="form-control" id="requestTime" aria-describedby="requestTime"
                                 required>
                         </div>
@@ -90,7 +92,7 @@
                             <textarea type="text" class="form-control" id="requestDesc"
                                 aria-describedby="requestDesc"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Request</button>
+                        <button class="btn btn-primary" id="request-btn">Request</button>
                     </form>
                 </div>
             </div>
@@ -145,4 +147,72 @@
         </div>
     </div>
 </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        // upload event
+    
+        $(document).on('click', '#event-btn', function (event) {
+            $.ajax({
+                url: "{{ url_for('upload_event') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'event-name': $('#eventName').val(),
+                    'event-time': $('#eventTime').val(),
+                    'event-location': $('#eventLocation').val(),
+                    'event-ppl': $('#maxPpl').val(),
+                    'event-desc': $('#eventDesc').val()
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            // clear fields
+            $('#eventName').val("");
+            $('#eventTime').val("");
+            $('#eventLocation').val("");
+            $('#maxPpl').val("");
+            $('#eventDesc').val("");
+
+            // prevent reloading
+            event.preventDefault();
+        });
+
+        $(document).on('click', '#request-btn', function(event) {
+            $.ajax({
+                url: "{{ url_for('upload_request') }}",
+                type: 'post',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    'request-name': $('#requestName').val(),
+                    'request-time': $('#requestTime').val(),
+                    'request-desc': $('#requestDesc').val()
+                }),
+                success: function (res) {
+                    console.log("success upload");
+                },
+                error: function (xhr) {
+                    console.log("failed...");
+                }
+            });
+            // clear fields
+            $('#requestName').val("");
+            $('#requestTime').val("");
+            $('#requestDesc').val("");
+
+            // prevent reloading
+            event.preventDefault();
+        });
+
+    });
+</script>
 {% endblock %}
