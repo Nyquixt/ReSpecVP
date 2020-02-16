@@ -13,13 +13,12 @@
     }
 
     .eventCard {
-        background-color: #87A330;
+        background-color: #3d2be2;
         color: white;
     }
 
     .requestCard {
-        background-color: #1A8FE3;
-        color: white;
+        background-color: #f3f3f3;
     }
 </style>
 {% endblock %}
@@ -98,7 +97,7 @@
                                 </div>
                                 {% else %}
                                 <div class="d-flex justify-content-center">
-                                    <button class="btn btn-primary rsvp" data-eventid="{{ event.id }}">RSVP</button>
+                                    <button class="btn btn-light rsvp" data-eventid="{{ event.id }}">RSVP</button>
                                 </div>
                                 {% endif %}
                                 {% endif %}
