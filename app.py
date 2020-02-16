@@ -146,10 +146,10 @@ def login():
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     if 'username' in session:
-        events = Event.objects()
-        requests = Request.objects()
+        events = Event.objects().order_by('time')
+        requests = Request.objects().order_by('time')
         user_id = User.objects.get(username=session['username']).id
-        return render_template('dashboard.html', events=reversed(events), requests=reversed(requests), user_id=user_id)
+        return render_template('dashboard.html', events=events, requests=requests, user_id=user_id)
     else:
         return abort(403)
 

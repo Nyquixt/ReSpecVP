@@ -137,6 +137,7 @@
                                 <h5 class="card-title text-center">{{ req.name }}</h5>
                                 <p class="text-center"><span>{{ req.time.strftime('%B %d, %Y') }}</span> |
                                     <span>{{ req.time.strftime('%I:%M %p') }}</span></p>
+                                    <p class="text-center">Posted By: {{ req.host.username }}</p>
                                 <hr />
                                 <p class="card-text">{{ req.desc }}</p>
                                 {% if req.accepted %}
