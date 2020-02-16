@@ -294,6 +294,30 @@ def accept():
     else:
         return abort(403)
 
+@login_required
+@app.route('/request/unaccept', methods=['POST'])
+def unaccept():
+    if 'username' in session:
+        if request.method == 'POST':
+            data = json.loads(request.data)
+
+            req = Request.objects.get(id=data['req-id'])
+            user = User.objects.get(username=session['username'])
+
+            req.accepted = False
+            req.accepted_by = None
+
+            req.save()
+
+            return {
+                "status": "success"
+            }
+        return {
+            "status": "failed..."
+        }
+    else:
+        return abort(403)
+
 # general routes
 @app.route('/', methods=['GET'])
 def index():
