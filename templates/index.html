@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
 {% block title %} Home Page {% endblock %}
+{% block head %}
+<style>
+   #tophead{
+      height: 100vh;
+      background-color: rgb(61, 43, 226);
+   }
+</style>
+{% endblock %}
 {% block content %}
-<div>
-   <h1>Landing Page</h1> 
+<div id="tophead">
+   <div class="container">
+   <div class="row">
+      <div class="col-md-6">
+         <h1>Get Together With Your Colleagues</h1>
+         <p></p>
+      </div>
+      <div class="col-md-6">
+
+      </div>
+   </div>
+</div>
 </div>
 {% endblock %}
