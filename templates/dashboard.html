@@ -2,18 +2,64 @@
 {% block title %} Dashboard {% endblock %}
 {% block content %}
 <div>
-    <button type="button" class="btn btn-dark">Create Event</button>
-    <button type="button" class="btn btn-light">Request</button>
     <div class="row">
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="col-lg-6">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#createevent" role="tab"
+                        aria-controls="home" aria-selected="true">Create Event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#request" role="tab"
+                        aria-controls="profile" aria-selected="false">Request</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="createevent" role="tabpanel"
+                    aria-labelledby="create-event-tab">
+                    <form method="POST" action="" role="form">
+                        <div class="form-group">
+                            <label for="eventName">Event Name</label>
+                            <input type="text" class="form-control" id="eventName" aria-describedby="eventName">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Time</label>
+                            <input type="text" class="form-control" id="eventTime" aria-describedby="eventTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventLocation">Location</label>
+                            <input type="text" class="form-control" id="eventLocation" aria-describedby="eventLocation">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxPpl">Max Number of People</label>
+                            <input type="text" class="form-control" id="maxPpl" aria-describedby="maxPpl">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventName">Description</label>
+                            <textarea type="text" class="form-control" id="eventDesc" aria-describedby="eventDesc"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="profile-tab">
+
                 </div>
             </div>
         </div>
+        <div class="col-lg-6">
+            {% for event in events %}
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p class="card-text">{{ event.date }}</p>
+                        <a href="" class="btn btn-primary">RSVP</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
     </div>
 </div>
 {% endblock %}
