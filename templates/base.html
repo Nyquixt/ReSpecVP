@@ -27,12 +27,21 @@
                 </li>
             </ul>
             <ul class="navbar-nav my-2 my-lg-0">
+                {% if 'username' in session %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="/dashboard"><button type="button" class="btn btn-dark">Dashboard</button></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/logout"><button type="button" class="btn btn-light">Logout</button></a>
+                </li>
+                {% else %}
                 <li class="nav-item active">
                     <a class="nav-link" href="/login"><button type="button" class="btn btn-dark">Login</button></a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="/register"><button type="button" class="btn btn-light">Register</button></a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </nav>
