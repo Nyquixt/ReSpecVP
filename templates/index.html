@@ -3,8 +3,13 @@
 {% block head %}
 <style>
    #tophead{
-      height: 100vh;
+      padding-top: 20vh;
+      height: 90vh;
       background-color: rgb(61, 43, 226);
+      color: white;
+   }
+   #tophead h1{
+      font-size: 50px;
    }
 </style>
 {% endblock %}
@@ -13,11 +18,11 @@
    <div class="container">
    <div class="row">
       <div class="col-md-6">
-         <h1>Get Together With Your Colleagues</h1>
-         <p></p>
+         <h1 style="font-size: 50px;">Get Together In Your Workplace</h1>
+         <p style="font-size: 20px;">The app for lonely people and cat lovers.</p>
       </div>
       <div class="col-md-6">
-
+         <img src="{{url_for('static', filename='images/topimg.jpg')}}" width="500">
       </div>
    </div>
 </div>
