@@ -146,7 +146,7 @@ def login():
             if user:
                 if bcrypt.hashpw(form.password.data, user.password) == user.password:
                     session['username'] = form.username.data  # set the session variables
-                    return redirect(url_for('index'))
+                    return redirect(url_for('dashboard'))
                 else:
                     return render_template('user/login.html', error='Incorrect username or password')
             # user does not exist
@@ -154,6 +154,12 @@ def login():
                 return render_template('user/login.html', error='Not a valid username. Register?')
 
     return render_template('user/login.html', form=form)
+
+# dashboard
+@login_required
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    return render_template('dashboard.html')
 
 # log out
 @login_required
@@ -243,7 +249,6 @@ def edit_event(id):
         return abort(403)
 
 # general routes
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
