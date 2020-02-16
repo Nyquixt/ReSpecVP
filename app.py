@@ -47,12 +47,14 @@ class Event(db.Document):
     max_participants = db.IntField(db_field='max_ppl')
     host = db.ReferenceField(User, db_field='host_person')
     desc = db.StringField(db_field='desc')
+    rsvp = db.ListField(db_field='rsvp')
 
 class Request(db.Document):
     name = db.StringField(db_field='name')
     time = db.DateTimeField(db_field='time')
     desc = db.StringField(db_field='desc')
     host = db.ReferenceField(User, db_field='host_person')
+    accepted = db.BooleanField(db_field='accepted', default=False)
 
 
 """ Forms """
@@ -144,7 +146,7 @@ def login():
 def dashboard():
     events = Event.objects()
     requests = Request.objects()
-    return render_template('dashboard.html', events=events, requests=requests)
+    return render_template('dashboard.html', events=reversed(events), requests=reversed(requests))
 
 # log out
 @login_required
@@ -204,13 +206,6 @@ def upload_request():
         }
     else:
         return abort(403)
-
-# all requests
-@login_required
-@app.route('/requests', methods=['GET'])
-def all_requests():
-    requests = Request.objects().to_json()
-    return requests
 
 # general routes
 @app.route('/', methods=['GET'])
