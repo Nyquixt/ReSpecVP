@@ -272,7 +272,7 @@ def accept():
         if request.method == 'POST':
             data = json.loads(request.data)
 
-            req = Request.objects.get(id=data['request-id'])
+            req = Request.objects.get(id=data['req-id'])
             user = User.objects.get(username=session['username'])
 
             req.accepted = True

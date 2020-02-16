@@ -87,7 +87,11 @@
                                 <p class="text-center">Max Ppl: {{ event.max_participants }}</p>
                                 <hr />
                                 <p class="card-text">{{ event.desc }}</p>
-
+                                {% if event.rsvp|length == event.max_participants %}
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-secondary cancel-rsvp" disabled>Full RSVP</button>
+                                </div>
+                                {% else %}
                                 {% if user_id in event.rsvp %}
                                 <div class="d-flex justify-content-center">
                                     <button class="btn btn-danger cancel-rsvp" data-eventid="{{ event.id }}">Cancel
@@ -97,6 +101,7 @@
                                 <div class="d-flex justify-content-center">
                                     <button class="btn btn-primary rsvp" data-eventid="{{ event.id }}">RSVP</button>
                                 </div>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -141,13 +146,20 @@
                                 <p class="card-text">{{ req.desc }}</p>
 
                                 {% if req.accepted %}
+                                {% if user_id == req.accepted_by.id %}
                                 <div class="d-flex justify-content-center">
-                                    <button class="btn btn-secondary" data-reqid="{{ req.id }}">Accepted By
-                                        Someone</button>
+                                    <button class="btn btn-secondary" disabled>Accepted</button>
                                 </div>
                                 {% else %}
                                 <div class="d-flex justify-content-center">
-                                    <button class="btn btn-success" data-reqid="{{ req.id }}">Accept</button>
+                                    <button class="btn btn-secondary" disabled>Accepted By
+                                        Someone</button>
+                                </div>
+                                {% endif %}
+                                
+                                {% else %}
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-success accept" data-reqid="{{ req.id }}">Accept</button>
                                 </div>
                                 {% endif %}
 
@@ -166,116 +178,138 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        // upload event
+    // upload event
 
-        $(document).on('click', '#event-btn', function (event) {
-            $.ajax({
-                url: "{{ url_for('upload_event') }}",
-                type: 'post',
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: JSON.stringify({
-                    'event-name': $('#eventName').val(),
-                    'event-time': document.getElementById('eventTime').value,
-                    'event-location': $('#eventLocation').val(),
-                    'event-ppl': $('#maxPpl').val(),
-                    'event-desc': $('#eventDesc').val()
-                }),
-                success: function (res) {
-                    console.log("success upload");
-                },
-                error: function (xhr) {
-                    console.log("failed...");
-                }
-            });
-            // clear fields
-            $('#eventName').val("");
-            $('#eventTime').val("");
-            $('#eventLocation').val("");
-            $('#maxPpl').val("");
-            $('#eventDesc').val("");
-
-            // prevent reloading
-            event.preventDefault();
-
-            location.reload(true);
+    $(document).on('click', '#event-btn', function (event) {
+        $.ajax({
+            url: "{{ url_for('upload_event') }}",
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                'event-name': $('#eventName').val(),
+                'event-time': document.getElementById('eventTime').value,
+                'event-location': $('#eventLocation').val(),
+                'event-ppl': $('#maxPpl').val(),
+                'event-desc': $('#eventDesc').val()
+            }),
+            success: function (res) {
+                console.log("success upload");
+            },
+            error: function (xhr) {
+                console.log("failed...");
+            }
         });
+        // clear fields
+        $('#eventName').val("");
+        $('#eventTime').val("");
+        $('#eventLocation').val("");
+        $('#maxPpl').val("");
+        $('#eventDesc').val("");
 
-        // rsvp event
-        $(document).on('click', '.rsvp', function (event) {
-            $.ajax({
-                url: "{{ url_for('rsvp') }}",
-                type: 'post',
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: JSON.stringify({
-                    'event-id': $(this).data('eventid')
-                }),
-                success: function (res) {
-                    console.log("success upload");
-                },
-                error: function (xhr) {
-                    console.log("failed...");
-                }
-            });
-            event.preventDefault();
+        // prevent reloading
+        event.preventDefault();
 
-            location.reload(true);
-        });
-
-        // cancel rsvp event
-        $(document).on('click', '.cancel-rsvp', function (event) {
-            $.ajax({
-                url: "{{ url_for('cancel_rsvp') }}",
-                type: 'post',
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: JSON.stringify({
-                    'event-id': $(this).data('eventid')
-                }),
-                success: function (res) {
-                    console.log("success upload");
-                },
-                error: function (xhr) {
-                    console.log("failed...");
-                }
-            });
-            event.preventDefault();
-
-            location.reload(true);
-        });
-
-        // upload request
-        $(document).on('click', '#request-btn', function (event) {
-            $.ajax({
-                url: "{{ url_for('upload_request') }}",
-                type: 'post',
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: JSON.stringify({
-                    'request-name': $('#requestName').val(),
-                    'request-time': document.getElementById('requestTime')
-                        .value,
-                    'request-desc': $('#requestDesc').val()
-                }),
-                success: function (res) {
-                    console.log("success upload");
-                },
-                error: function (xhr) {
-                    console.log("failed...");
-                }
-            });
-            // clear fields
-            $('#requestName').val("");
-            $('#requestTime').val("");
-            $('#requestDesc').val("");
-
-            // prevent reloading
-            event.preventDefault();
-
-            location.reload(true);
-        });
-
+        location.reload(true);
     });
+
+    // rsvp event
+    $(document).on('click', '.rsvp', function (event) {
+        $.ajax({
+            url: "{{ url_for('rsvp') }}",
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                'event-id': $(this).data('eventid')
+            }),
+            success: function (res) {
+                console.log("success upload");
+            },
+            error: function (xhr) {
+                console.log("failed...");
+            }
+        });
+        event.preventDefault();
+
+        location.reload(true);
+    });
+
+    // cancel rsvp event
+    $(document).on('click', '.cancel-rsvp', function (event) {
+        $.ajax({
+            url: "{{ url_for('cancel_rsvp') }}",
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                'event-id': $(this).data('eventid')
+            }),
+            success: function (res) {
+                console.log("success upload");
+            },
+            error: function (xhr) {
+                console.log("failed...");
+            }
+        });
+        event.preventDefault();
+
+        location.reload(true);
+    });
+
+    // upload request
+    $(document).on('click', '#request-btn', function (event) {
+        $.ajax({
+            url: "{{ url_for('upload_request') }}",
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                'request-name': $('#requestName').val(),
+                'request-time': document.getElementById('requestTime')
+                    .value,
+                'request-desc': $('#requestDesc').val()
+            }),
+            success: function (res) {
+                console.log("success upload");
+            },
+            error: function (xhr) {
+                console.log("failed...");
+            }
+        });
+        // clear fields
+        $('#requestName').val("");
+        $('#requestTime').val("");
+        $('#requestDesc').val("");
+
+        // prevent reloading
+        event.preventDefault();
+
+        location.reload(true);
+    });
+
+    // accept request
+    // cancel rsvp event
+    $(document).on('click', '.accept', function (event) {
+        $.ajax({
+            url: "{{ url_for('accept') }}",
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                'req-id': $(this).data('reqid')
+            }),
+            success: function (res) {
+                console.log("success upload");
+            },
+            error: function (xhr) {
+                console.log("failed...");
+            }
+        });
+        event.preventDefault();
+
+        location.reload(true);
+    });
+});
 </script>
 {% endblock %}
