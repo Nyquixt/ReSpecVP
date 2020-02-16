@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # cfg
 app.config['SECRET_KEY'] = 'ReSpecVP'
-app.config['MONGODB_SETTINGS'] = {
+app.config['MONGODB_SETTINGS'] =  {
     'db': 'respecvp',
     'host': '127.0.0.1',
     'port': 27017
@@ -134,10 +134,11 @@ def login():
                     session['username'] = form.username.data  # set the session variables
                     return redirect(url_for('dashboard'))
                 else:
-                    return render_template('user/login.html', error='Incorrect username or password')
+
+                    return render_template('user/login.html', form=form, error='Incorrect username or password')
             # user does not exist
             else:
-                return render_template('user/login.html', error='Not a valid username. Register?')
+                return render_template('user/login.html', form=form, error='Not a valid username. Register?')
 
     return render_template('user/login.html', form=form)
 
@@ -225,6 +226,7 @@ def rsvp():
             rsvp_list = event.rsvp
 
             if len(rsvp_list) < event.max_participants: # add if not exceed max ppl
+                print('adding')
                 rsvp_list.append(user.id)
             else:
                 return {
@@ -280,6 +282,30 @@ def accept():
 
             req.accepted = True
             req.accepted_by = user
+
+            req.save()
+
+            return {
+                "status": "success"
+            }
+        return {
+            "status": "failed..."
+        }
+    else:
+        return abort(403)
+
+@login_required
+@app.route('/request/unaccept', methods=['POST'])
+def unaccept():
+    if 'username' in session:
+        if request.method == 'POST':
+            data = json.loads(request.data)
+
+            req = Request.objects.get(id=data['req-id'])
+            user = User.objects.get(username=session['username'])
+
+            req.accepted = False
+            req.accepted_by = None
 
             req.save()
 
