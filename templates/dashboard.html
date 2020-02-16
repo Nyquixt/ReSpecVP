@@ -84,7 +84,7 @@
                                     <span>{{ event.time.strftime('%B %d, %Y') }}</span> | <span>
                                         {{ event.time.strftime('%I:%M %p') }}
                                     </span></p>
-                                <p class="text-center">Max Ppl: {{ event.max_participants }}</p>
+                                <p class="text-center">Spots Left: {{ event.max_participants - event.rsvp|length }}</p>
                                 <hr />
                                 <p class="card-text">{{ event.desc }}</p>
                                 {% if event.rsvp|length == event.max_participants %}
