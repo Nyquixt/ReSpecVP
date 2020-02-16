@@ -145,10 +145,13 @@ def login():
 @login_required
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    events = Event.objects()
-    requests = Request.objects()
-    user_id = User.objects.get(username=session['username']).id
-    return render_template('dashboard.html', events=reversed(events), requests=reversed(requests), user_id=user_id)
+    if 'username' in session:
+        events = Event.objects()
+        requests = Request.objects()
+        user_id = User.objects.get(username=session['username']).id
+        return render_template('dashboard.html', events=reversed(events), requests=reversed(requests), user_id=user_id)
+    else:
+        return abort(403)
 
 # log out
 @login_required
